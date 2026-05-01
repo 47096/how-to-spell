@@ -274,22 +274,29 @@
 
     // === Word Extraction ===
     function extractWord(alternatives) {
+      // Patterns capture everything after "spell" up to end of string
+      // so "how to spell ice cream" → "ice cream"
       const patterns = [
-        /(?:how to|how do you|how do|can you|could you)\s+spell\s+(\w+)/i,
-        /(?:what is|what's|whats)\s+(?:the word\s+)?(?:for\s+)?(\w+)/i,
-        /spell\s+(\w+)/i,
-        /(?:tell me|say)\s+(?:how to spell\s+)?(\w+)/i,
+        /(?:how to|how do you|how do|can you|could you)\s+spell\s+(.+)/i,
+        /(?:what is|what's|whats)\s+(?:the word\s+)?(?:for\s+)?(.+)/i,
+        /spell\s+(.+)/i,
+        /(?:tell me|say)\s+(?:how to spell\s+)?(.+)/i,
       ];
 
       for (const alt of alternatives) {
         for (const pattern of patterns) {
           const match = alt.match(pattern);
-          if (match && match[1].length >= 2) {
-            return match[1].toLowerCase();
+          if (match) {
+            // Clean: keep only letters and spaces, trim, lowercase
+            const cleaned = match[1].replace(/[^a-z\s]/gi, '').trim().toLowerCase();
+            if (cleaned.length >= 2) {
+              return cleaned;
+            }
           }
         }
       }
 
+      // Fallback: last meaningful word
       for (const alt of alternatives) {
         const words = alt.split(/\s+/).filter(w => w.length >= 2 && /^[a-z]+$/i.test(w));
         if (words.length > 0) {
