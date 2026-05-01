@@ -72,8 +72,8 @@
       50% { transform: scale(1.08); box-shadow: 0 8px 50px rgba(255,107,107,0.4); }
     }
 
-    /* Letter display */
-    .letter-stage {
+    /* Word display stage */
+    .word-stage {
       position: fixed;
       inset: 0;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -87,62 +87,25 @@
       transition: opacity 0.3s ease;
     }
 
-    .letter-stage.active {
+    .word-stage.active {
       opacity: 1;
       pointer-events: auto;
     }
 
-    .current-letter {
-      font-size: clamp(6rem, 30vw, 12rem);
+    .display-word {
+      font-size: clamp(3rem, 15vw, 7rem);
       font-weight: 900;
       color: white;
       text-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      min-height: 1.2em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      letter-spacing: 0.05em;
+      text-align: center;
+      padding: 0 1rem;
     }
 
     @keyframes popIn {
       0% { transform: scale(0.3); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
-    }
-
-    .word-progress {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 2rem;
-    }
-
-    .word-progress .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      transition: background 0.3s ease, transform 0.3s ease;
-    }
-
-    .word-progress .dot.done {
-      background: white;
-      transform: scale(1.2);
-    }
-
-    .word-progress .dot.current {
-      background: #ffd93d;
-      transform: scale(1.3);
-      box-shadow: 0 0 10px rgba(255,217,61,0.5);
-    }
-
-    /* Full word display */
-    .full-word {
-      font-size: clamp(2.5rem, 10vw, 5rem);
-      font-weight: 900;
-      color: #ffd93d;
-      text-shadow: 0 3px 15px rgba(0,0,0,0.2);
-      margin-top: 1.5rem;
-      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      letter-spacing: 0.05em;
     }
 
     .tap-hint {
@@ -209,7 +172,7 @@
 </head>
 <body>
 
-  <div class="title">How do you spell it?</div>
+  <div class="title">How to spell ... ?</div>
 
   <button class="mic-btn" id="micBtn" aria-label="Tap to speak">
     <svg class="mic-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -220,11 +183,9 @@
 
   <div class="listening-text" id="listeningText">Listening...</div>
 
-  <!-- Letter display stage -->
-  <div class="letter-stage" id="letterStage">
-    <div class="current-letter" id="currentLetter"></div>
-    <div class="word-progress" id="wordProgress"></div>
-    <div class="full-word" id="fullWord" style="display:none"></div>
+  <!-- Word display stage -->
+  <div class="word-stage" id="wordStage">
+    <div class="display-word" id="displayWord"></div>
     <div class="tap-hint" id="tapHint" style="display:none">Tap anywhere to try another word</div>
   </div>
 
@@ -232,8 +193,52 @@
 
   <canvas id="confetti"></canvas>
 
-  <!-- Minimal confetti — no dependency needed -->
   <script>
+    // === Bad word filter ===
+    const BLOCKED_WORDS = new Set([
+      // Common swear words
+      'fuck','fck','fuk','fucc','fux','phuck','fucker','fucking','fucked','fucks',
+      'shit','shyt','sh1t','shiit',
+      'damn','dammit','damnit',
+      'hell','hells',
+      'bitch','biatch','betch',
+      'ass','arse','asses',' asshole','asshole',
+      'bastard','basterd',
+      'crap',
+      'dick','dik','d1ck',
+      'cock','cok',
+      'piss','pis',
+      'slut','slt',
+      'whore','hore','wh0re',
+      'twat',
+      'retard','retarded',
+      // Racial slurs / hate speech
+      'nigger','nigga','n1gger','n1gga','ngr','kike','spic','chink','gook','wetback',
+      // Harmful / violent
+      'kill','murder','die','suicide','bomb','gun','weapon',
+      // Drug references
+      'drugs','drug','cocaine','heroin','meth','weed','marijuana','lsd','ecstasy',
+      // Sexual content
+      'porn','sex','sexy','nude','naked','boobs','penis','vagina',
+    ]);
+
+    // Also block partial matches for some patterns
+    const BLOCKED_PATTERNS = [
+      /\bf+u+c+k+/i,
+      /\bs+h+i+t+/i,
+      /\ba+s+s+h+o+l+e/i,
+      /\bn+i+g+(g|a)/i,
+    ];
+
+    function isWordBlocked(word) {
+      const clean = word.toLowerCase().replace(/[^a-z]/g, '');
+      if (BLOCKED_WORDS.has(clean)) return true;
+      for (const pattern of BLOCKED_PATTERNS) {
+        if (pattern.test(clean)) return true;
+      }
+      return false;
+    }
+
     // === Confetti ===
     const confettiCanvas = document.getElementById('confetti');
     const ctx = confettiCanvas.getContext('2d');
@@ -300,10 +305,8 @@
     // === Speech Recognition ===
     const micBtn = document.getElementById('micBtn');
     const listeningText = document.getElementById('listeningText');
-    const letterStage = document.getElementById('letterStage');
-    const currentLetter = document.getElementById('currentLetter');
-    const wordProgress = document.getElementById('wordProgress');
-    const fullWord = document.getElementById('fullWord');
+    const wordStage = document.getElementById('wordStage');
+    const displayWord = document.getElementById('displayWord');
     const tapHint = document.getElementById('tapHint');
     const errorMsg = document.getElementById('errorMsg');
 
@@ -329,7 +332,7 @@
       }
       const word = extractWord(alternatives);
       if (word) {
-        spellWord(word);
+        showWord(word);
       } else {
         showError("I didn't catch that! Try saying a word like 'cat' or 'family'.");
         stopListening();
@@ -353,7 +356,6 @@
 
     // === Word Extraction ===
     function extractWord(alternatives) {
-      // Common patterns: "how to spell X", "spell X", "how do you spell X", "what is X", "X"
       const patterns = [
         /(?:how to|how do you|how do|can you|could you)\s+spell\s+(\w+)/i,
         /(?:what is|what's|whats)\s+(?:the word\s+)?(?:for\s+)?(\w+)/i,
@@ -381,126 +383,43 @@
       return null;
     }
 
-    // === Spell Word ===
-    async function spellWord(word) {
+    // === Show Word ===
+    async function showWord(word) {
       isAnimating = true;
       stopListening();
 
-      // Show letter stage
-      letterStage.classList.add('active');
-      fullWord.style.display = 'none';
-      tapHint.style.display = 'none';
-
-      // Build progress dots
-      wordProgress.innerHTML = '';
-      const letters = word.split('');
-      letters.forEach(() => {
-        const dot = document.createElement('div');
-        dot.className = 'dot';
-        wordProgress.appendChild(dot);
-      });
-
-      // Spell each letter
-      for (let i = 0; i < letters.length; i++) {
-        const letter = letters[i].toUpperCase();
-
-        // Update progress dots
-        const dots = wordProgress.querySelectorAll('.dot');
-        dots.forEach((d, idx) => {
-          d.className = 'dot' + (idx < i ? ' done' : idx === i ? ' current' : '');
-        });
-
-        // Show letter with animation
-        currentLetter.style.animation = 'none';
-        currentLetter.offsetHeight; // force reflow
-        currentLetter.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        currentLetter.textContent = letter;
-
-        // Speak the lowercase letter to avoid "capital A" from TTS
-        await speak(letters[i]);
-
-        // Wait a beat between letters
-        await delay(400);
+      // Check word filter
+      if (isWordBlocked(word)) {
+        showError("Let's try a different word!");
+        isAnimating = false;
+        return;
       }
 
-      // Mark all dots done
-      const dots = wordProgress.querySelectorAll('.dot');
-      dots.forEach(d => d.className = 'dot done');
+      // Show word stage
+      wordStage.classList.add('active');
+      tapHint.style.display = 'none';
 
-      // Show the full word
-      currentLetter.textContent = '';
-      fullWord.textContent = word.charAt(0).toUpperCase() + word.slice(1);
-      fullWord.style.display = 'block';
+      // Display the word with capitalised first letter
+      displayWord.textContent = word.charAt(0).toUpperCase() + word.slice(1);
       tapHint.style.display = 'block';
-
-      // Speak the full word (lowercase to avoid "capital" prefix)
-      await speak(word);
 
       // Confetti!
       launchConfetti();
 
       // Wait for tap to restart
       await waitForTap();
-      hideLetterStage();
+      hideWordStage();
       isAnimating = false;
-    }
-
-    // === TTS (iOS-safe) ===
-    let currentUtterance = null;
-
-    function speak(text) {
-      return new Promise((resolve) => {
-        // Cancel any pending speech
-        speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.85;
-        utterance.pitch = 1.1;
-        utterance.volume = 1;
-
-        // Pick a nice voice
-        const voices = speechSynthesis.getVoices();
-        const preferred = voices.find(v => v.name.includes('Samantha')) ||
-                         voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) ||
-                         voices.find(v => v.lang.startsWith('en'));
-        if (preferred) utterance.voice = preferred;
-
-        currentUtterance = utterance;
-
-        // On iOS, onend can fire early or not at all.
-        // Use a generous timeout as fallback.
-        let resolved = false;
-        const done = () => {
-          if (!resolved) {
-            resolved = true;
-            currentUtterance = null;
-            resolve();
-          }
-        };
-
-        utterance.onend = done;
-        utterance.onerror = done;
-
-        speechSynthesis.speak(utterance);
-
-        // Fallback: estimate speech duration (rough: 40ms per char, min 600ms)
-        const estimatedMs = Math.max(600, text.length * 200);
-        setTimeout(done, estimatedMs + 400);
-      });
-    }
-
-    function delay(ms) {
-      return new Promise(r => setTimeout(r, ms));
     }
 
     // === Wait for tap ===
     function waitForTap() {
       return new Promise((resolve) => {
         const handler = () => {
-          letterStage.removeEventListener('click', handler);
+          wordStage.removeEventListener('click', handler);
           resolve();
         };
-        letterStage.addEventListener('click', handler);
+        wordStage.addEventListener('click', handler);
       });
     }
 
@@ -512,9 +431,7 @@
         isListening = true;
         micBtn.classList.add('listening');
         listeningText.classList.add('show');
-      } catch (e) {
-        // Already started
-      }
+      } catch (e) {}
     }
 
     function stopListening() {
@@ -524,11 +441,10 @@
       listeningText.classList.remove('show');
     }
 
-    function hideLetterStage() {
-      letterStage.classList.remove('active');
-      fullWord.style.display = 'none';
+    function hideWordStage() {
+      wordStage.classList.remove('active');
       tapHint.style.display = 'none';
-      currentLetter.textContent = '';
+      displayWord.textContent = '';
     }
 
     function showError(msg) {
@@ -546,10 +462,6 @@
         startListening();
       }
     });
-
-    // Pre-load voices (some browsers need this)
-    speechSynthesis.getVoices();
-    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
   </script>
 
 </body>
