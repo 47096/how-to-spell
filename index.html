@@ -98,6 +98,32 @@
       opacity: 1;
     }
 
+    /* Waveform container */
+    .waveform-container {
+      position: fixed;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 5;
+    }
+
+    .waveform-container.show {
+      opacity: 1;
+    }
+
+    #waveformCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
     /* Word display */
     .word-stage {
       position: fixed;
@@ -184,6 +210,10 @@
     </button>
 
     <div class="listening-text" id="listeningText">Listening...</div>
+  </div>
+
+  <div class="waveform-container" id="waveformContainer">
+    <canvas id="waveformCanvas"></canvas>
   </div>
 
   <div class="word-stage" id="wordStage">
@@ -304,9 +334,15 @@
     const displayWord = document.getElementById('displayWord');
     const tapHint = document.getElementById('tapHint');
     const errorMsg = document.getElementById('errorMsg');
+    const waveformContainer = document.getElementById('waveformContainer');
+    const waveformCanvas = document.getElementById('waveformCanvas');
 
     let isListening = false;
     let isAnimating = false;
+    let audioContext = null;
+    let analyser = null;
+    let microphone = null;
+    let animationId = null;
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -424,13 +460,15 @@
     }
 
     // === UI ===
-    function startListening() {
+    async function startListening() {
       if (isAnimating) return;
       try {
         recognition.start();
         isListening = true;
         micBtn.classList.add('listening');
         listeningText.classList.add('show');
+        waveformContainer.classList.add('show');
+        await initAudioVisualization();
       } catch (e) {}
     }
 
@@ -439,6 +477,8 @@
       isListening = false;
       micBtn.classList.remove('listening');
       listeningText.classList.remove('show');
+      waveformContainer.classList.remove('show');
+      stopAudioVisualization();
     }
 
     function hideWordStage() {
@@ -451,6 +491,84 @@
       errorMsg.textContent = msg;
       errorMsg.classList.add('show');
       setTimeout(() => errorMsg.classList.remove('show'), 3000);
+    }
+
+    // === Audio Visualization (Waveform) ===
+    async function initAudioVisualization() {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          microphone = audioContext.createMediaStreamSource(stream);
+          microphone.connect(analyser);
+        }
+        
+        drawWaveform();
+      } catch (e) {
+        console.log('Audio visualization not available:', e);
+      }
+    }
+
+    function drawWaveform() {
+      if (!analyser || !isListening) return;
+      
+      const canvas = waveformCanvas;
+      const ctx = canvas.getContext('2d');
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      // Set canvas size for high DPI displays
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      
+      animationId = requestAnimationFrame(drawWaveform);
+      
+      analyser.getByteFrequencyData(dataArray);
+      
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      
+      const barWidth = (rect.width / bufferLength) * 2.5;
+      let x = 0;
+      
+      // Create gradient
+      const gradient = ctx.createLinearGradient(0, 0, 0, rect.height);
+      gradient.addColorStop(0, '#ff3b30');
+      gradient.addColorStop(1, '#ff9500');
+      
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * rect.height;
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.roundRect(x, (rect.height - barHeight) / 2, barWidth - 1, barHeight, 2);
+        ctx.fill();
+        
+        x += barWidth + 1;
+      }
+    }
+
+    function stopAudioVisualization() {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      
+      if (microphone) {
+        microphone.disconnect();
+        microphone = null;
+      }
+      
+      if (audioContext && audioContext.state !== 'closed') {
+        audioContext.close();
+        audioContext = null;
+        analyser = null;
+      }
     }
 
     micBtn.addEventListener('click', () => {
