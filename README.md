@@ -6,8 +6,10 @@
 
 > Say, how to spell ... ?
 
-
 Kids ask "how do you spell [word]?" a hundred times a day. In the car. At the dinner table. When you're busy. It's not annoying because you don't care — it's annoying because you can't always drop everything. This app gives them the answer on their own. Tap the button, say the word, see the spelling. Done.
+
+<img align="left" width="400" height="700" alt="IMG_1723" src="https://github.com/user-attachments/assets/1ec65231-66b9-49d7-8af0-b396e2282626" />
+<img width="400" height="700" alt="IMG_1726" src="https://github.com/user-attachments/assets/567bc2d0-69ca-4009-9215-0bc7f8e23d29" />
 
 ## 🎯 Live Demo
 
