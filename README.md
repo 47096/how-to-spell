@@ -1,4 +1,4 @@
-# Spell A Word
+# How to spell
 
 > How to spell ... ?
 
@@ -39,8 +39,8 @@ Most spelling apps are bloated. They want your email, your kid's age, a subscrip
 
 ```bash
 # clone the repo
-git clone https://github.com/wsamuelw/spell-a-word.git
-cd spell-a-word
+git clone https://github.com/wsamuelw/how-to-spell.git
+cd how-to-spell
 
 # open in browser
 open index.html
