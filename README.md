@@ -13,7 +13,7 @@ Kids ask "how do you spell [word]?" a hundred times a day. In the car. At the di
 
 ## 🎯 Live Demo
 
-Try it now: **[wsamuelw.github.io/how-to-spell](https://wsamuelw.github.io/how-to-spell)** (replace with your actual URL)
+Try it now: **[wsamuelw.github.io/how-to-spell](https://wsamuelw.github.io/how-to-spell)** 
 
 ## ✨ Features
 
@@ -41,7 +41,7 @@ Your kid finds a new word in their book and wants to know how to spell it. No ne
 
 ## 🚀 How It Works
 
-1. Tap the microphone button
+1. Tap the microphone button (Allow to access the microphone)
 2. Say "how to spell [word]" (or just say the word)
 3. See the spelling on screen with visual waveform feedback
 4. Tap anywhere to try another word
