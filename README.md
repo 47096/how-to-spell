@@ -1,57 +1,177 @@
-# How to spell
+# How to Spell
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![No Dependencies](https://img.shields.io/badge/dependencies-none-success)]()
+[![Status](https://img.shields.io/badge/status-active-success)]()
 
 > How to spell ... ?
 
 Kids ask "how do you spell [word]?" a hundred times a day. In the car. At the dinner table. When you're busy. It's not annoying because you don't care — it's annoying because you can't always drop everything. This app gives them the answer on their own. Tap the button, say the word, see the spelling. Done.
 
-## Use Cases
+## 🎯 Live Demo
 
-**1. Homework time**
+Try it now: **[wsamuelw.github.io/how-to-spell](https://wsamuelw.github.io/how-to-spell)** (replace with your actual URL)
+
+## ✨ Features
+
+- **Voice Recognition** - Say "how to spell [word]" or just the word itself
+- **Real-time Waveform** - Visual feedback when listening to your voice
+- **Smart Error Handling** - Clear, actionable messages for common issues
+- **Skeleton Loading** - Smooth transitions between states
+- **Mobile Optimized** - Works perfectly on phones and tablets
+- **Zero Setup** - No accounts, no passwords, no configuration
+- **Offline Capable** - Works without internet after first load*
+- **Privacy First** - Minimal analytics, no personal data collection
+
+*\*Note: Voice recognition requires internet connection for most browsers
+
+## 📱 Use Cases
+
+**1. Homework time**  
 Your kid is writing a sentence and gets stuck on a word. Instead of yelling from the other room, they tap the mic, say the word, and get the spelling instantly. They stay in the flow. You stay sane.
 
-**2. Road trips**
+**2. Road trips**  
 "How do you spell 'dinosaur'?" for the fifth time in twenty minutes. Hand them the phone. Problem solved for the rest of the drive.
 
-**3. Bedtime reading**
+**3. Bedtime reading**  
 Your kid finds a new word in their book and wants to know how to spell it. No need to stop reading. Just tap, say, see.
 
-## How It Works
+## 🚀 How It Works
 
 1. Tap the microphone button
 2. Say "how to spell [word]" (or just say the word)
-3. See the spelling on screen
+3. See the spelling on screen with visual waveform feedback
 4. Tap anywhere to try another word
 
 That's it. No accounts. No settings. No distractions.
 
-## Why This Exists
+## 🌐 Browser Compatibility
 
-Most spelling apps are bloated. They want your email, your kid's age, a subscription, and twenty minutes of setup before your child can do the one thing they need: find out how to spell a word. This app is a single HTML file. It works on any phone with a browser. No backend, no tracking, no ads. Just a button and a word.
+| Browser | Support | Notes |
+|---------|---------|-------|
+| Chrome (Android/Desktop) | ✅ Full | Best experience |
+| Safari (iOS/macOS) | ✅ Full | iOS 14.3+ required |
+| Firefox | ⚠️ Limited | May require flags |
+| Edge | ✅ Full | Chromium-based |
+| Samsung Internet | ✅ Full | Android only |
 
-## Tech
+## 🛠️ Troubleshooting
 
-- Vanilla HTML, CSS, JavaScript — no frameworks, no dependencies
-- Web Speech API for voice recognition
-- Static site — deployable anywhere (GitHub Pages, Netlify, a USB stick)
-- Works on iOS Safari, Android Chrome, and desktop browsers
+### "Microphone access denied"
+- **Cause**: Browser blocked microphone permission
+- **Fix**: Go to browser settings → Site permissions → Microphone → Allow for this site
 
-## Running Locally
+### "No microphone found"
+- **Cause**: No microphone connected or detected
+- **Fix**: Connect a microphone or use a device with built-in mic
+
+### "No speech detected"
+- **Cause**: Silence or background noise during recording
+- **Fix**: Speak clearly within 2-3 seconds of tapping the mic
+
+### "Network error"
+- **Cause**: No internet connection (required for speech recognition)
+- **Fix**: Check your internet connection and try again
+
+### "Audio capture failed"
+- **Cause**: Another app is using the microphone
+- **Fix**: Close other apps using the microphone and refresh the page
+
+## 💻 Tech Stack
+
+- **Vanilla HTML, CSS, JavaScript** — No frameworks, no dependencies, no build step
+- **Web Speech API** — Native browser speech recognition
+- **Web Audio API** — Real-time waveform visualization
+- **Google Analytics 4** — Anonymous usage tracking (G-YG9J93G0R4)
+- **Static Site** — Deployable anywhere (GitHub Pages, Netlify, Vercel, even a USB stick)
+
+## 🔒 Privacy & Analytics
+
+This app uses **Google Analytics 4** to track anonymous usage statistics:
+- Page views with device/browser information
+- Voice recognition events (success/failure)
+- Session duration
+
+**What we DON'T track:**
+- Personal information
+- Voice recordings
+- Specific words searched
+- User identity or location
+
+You can view the implementation in `index.html` (lines 5-13).
+
+## 🏃 Running Locally
 
 ```bash
-# clone the repo
+# Clone the repo
 git clone https://github.com/wsamuelw/how-to-spell.git
 cd how-to-spell
 
-# open in browser
+# Option 1: Open directly in browser
 open index.html
+
+# Option 2: Use a local server (recommended for mobile testing)
+python3 -m http.server 8000
+# Then visit: http://localhost:8000
 ```
 
 That's it. No build step. No `npm install`. Just open the file.
 
-## Contributing
+## 📦 Deployment Options
 
-PRs welcome. Keep it simple — this app works because it does one thing. If your change adds complexity, open an issue first and let's talk about it.
+### GitHub Pages (Recommended)
+```bash
+# Enable GitHub Pages in repo settings
+# Your site will be live at: username.github.io/repo-name
+```
 
-## License
+### Netlify
+1. Drag & drop the folder to [netlify.com](https://netlify.com)
+2. Or connect your GitHub repo for auto-deploy
 
-MIT
+### Vercel
+```bash
+npm i -g vercel
+vercel
+```
+
+## 🤝 Contributing
+
+PRs welcome! Keep it simple — this app works because it does one thing well.
+
+**Before submitting:**
+- Test on mobile devices (iOS Safari + Android Chrome)
+- Ensure no new dependencies are added
+- Keep bundle size minimal
+- Open an issue first if your change adds complexity
+
+**Development guidelines:**
+- No frameworks or build tools
+- Vanilla JS only
+- Mobile-first design
+- Accessibility matters
+
+## ❓ FAQ
+
+**Q: Does it work offline?**  
+A: The UI works offline, but voice recognition requires an internet connection in most browsers.
+
+**Q: Is it free?**  
+A: Yes, completely free and open source (MIT license).
+
+**Q: Can I use it for other languages?**  
+A: Currently optimized for English. Multi-language support would require additional development.
+
+**Q: Why Google Analytics?**  
+A: To understand usage patterns and improve the app. All data is anonymous and aggregated.
+
+**Q: My kid broke it!**  
+A: Just refresh the page. Nothing can break permanently — it's just HTML!
+
+## 📄 License
+
+MIT License — feel free to use, modify, and distribute. See [LICENSE](LICENSE) for details.
+
+---
+
+Made with ❤️ for parents everywhere
