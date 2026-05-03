@@ -192,6 +192,70 @@
   <div class="error-msg" id="errorMsg"></div>
 
   <script>
+    // === Google Analytics Event Tracking ===
+    function trackEvent(eventName, params = {}) {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', eventName, params);
+      }
+    }
+
+    // Track session duration
+    let sessionStartTime = Date.now();
+    window.addEventListener('beforeunload', () => {
+      const sessionDuration = Math.round((Date.now() - sessionStartTime) / 1000);
+      trackEvent('session_duration', {
+        duration_seconds: sessionDuration,
+        browser: navigator.userAgent,
+        device_type: getDeviceType(),
+        platform: navigator.platform
+      });
+    });
+
+    // Track browser and device info on page load
+    function getDeviceType() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      if (/mobile|android|iphone|ipad|ipod/i.test(userAgent)) {
+        return 'mobile';
+      } else if (/tablet|ipad|android(?!.*mobile)/i.test(userAgent)) {
+        return 'tablet';
+      } else {
+        return 'desktop';
+      }
+    }
+
+    function getBrowserInfo() {
+      const userAgent = navigator.userAgent;
+      let browser = 'Unknown';
+      let version = 'Unknown';
+      
+      if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Edg') === -1) {
+        browser = 'Chrome';
+        version = userAgent.match(/Chrome\/([\d.]+)/)?.[1] || 'Unknown';
+      } else if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) {
+        browser = 'Safari';
+        version = userAgent.match(/Version\/([\d.]+)/)?.[1] || 'Unknown';
+      } else if (userAgent.indexOf('Firefox') > -1) {
+        browser = 'Firefox';
+        version = userAgent.match(/Firefox\/([\d.]+)/)?.[1] || 'Unknown';
+      } else if (userAgent.indexOf('Edg') > -1) {
+        browser = 'Edge';
+        version = userAgent.match(/Edg\/([\d.]+)/)?.[1] || 'Unknown';
+      }
+      
+      return { browser, version };
+    }
+
+    // Send initial page view with browser/device info
+    const browserInfo = getBrowserInfo();
+    const deviceType = getDeviceType();
+    trackEvent('page_view', {
+      browser: browserInfo.browser,
+      browser_version: browserInfo.version,
+      device_type: deviceType,
+      platform: navigator.platform,
+      language: navigator.language
+    });
+
     // === Bad word filter ===
     const BLOCKED_WORDS = new Set([
       'fuck','fck','fuk','fucc','fux','phuck','fucker','fucking','fucked','fucks',
@@ -329,6 +393,14 @@
         return;
       }
 
+      // Track word requested
+      trackEvent('word_requested', {
+        word: word,
+        word_length: word.length,
+        browser: browserInfo.browser,
+        device_type: deviceType
+      });
+
       wordStage.classList.add('active');
       tapHint.style.display = 'none';
       displayWord.textContent = word.charAt(0).toUpperCase() + word.slice(1);
@@ -381,6 +453,13 @@
 
     micBtn.addEventListener('click', () => {
       if (isAnimating) return;
+      
+      // Track mic button click
+      trackEvent('mic_button_click', {
+        browser: browserInfo.browser,
+        device_type: deviceType
+      });
+      
       if (isListening) {
         stopListening();
       } else {
