@@ -343,6 +343,17 @@
     let analyser = null;
     let microphone = null;
     let animationId = null;
+    let currentErrorMessage = '';
+
+    // Error message mapping
+    const errorMessages = {
+        'not-allowed': 'Microphone access denied. Please allow microphone access in your browser settings.',
+        'no-microphone': 'No microphone found. Please connect a microphone and try again.',
+        'network': 'Network error. Please check your internet connection and try again.',
+        'no-speech': 'No speech detected. Please try speaking more clearly.',
+        'audio-capture': 'Unable to capture audio. Please refresh the page and try again.',
+        'default': 'An unexpected error occurred. Please try again.'
+    };
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -371,13 +382,24 @@
     };
 
     recognition.onerror = (event) => {
+      let errorMessage = '';
+      
+      // Map error codes to user-friendly messages
       if (event.error === 'no-speech') {
-        showError("Didn't hear anything. Try again.");
-      } else if (event.error === 'not-allowed') {
-        showError("Microphone access needed.");
+        errorMessage = errorMessages['no-speech'];
+      } else if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+        errorMessage = errorMessages['not-allowed'];
+      } else if (event.error === 'no-microphone' || event.error === 'devices-not-found') {
+        errorMessage = errorMessages['no-microphone'];
+      } else if (event.error === 'network' || event.error === 'service-not-allowed') {
+        errorMessage = errorMessages['network'];
+      } else if (event.error === 'audio-capture') {
+        errorMessage = errorMessages['audio-capture'];
       } else {
-        showError("Something went wrong. Try again.");
+        errorMessage = errorMessages['default'];
       }
+      
+      showError(errorMessage);
       stopListening();
     };
 
@@ -509,6 +531,16 @@
         drawWaveform();
       } catch (e) {
         console.log('Audio visualization not available:', e);
+        // Handle specific getUserMedia errors
+        if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+          showError(errorMessages['not-allowed']);
+        } else if (e.name === 'NotFoundError' || e.name === 'DevicesNotFoundError') {
+          showError(errorMessages['no-microphone']);
+        } else if (e.name === 'NotReadableError' || e.name === 'TrackStartError') {
+          showError(errorMessages['audio-capture']);
+        } else {
+          showError(errorMessages['default']);
+        }
       }
     }
 
