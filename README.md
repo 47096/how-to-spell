@@ -85,7 +85,7 @@ That's it. No accounts. No settings. No distractions.
 - **Vanilla HTML, CSS, JavaScript** — No frameworks, no dependencies, no build step
 - **Web Speech API** — Native browser speech recognition
 - **Web Audio API** — Real-time waveform visualization
-- **Google Analytics 4** — Anonymous usage tracking (G-YG9J93G0R4)
+- **Google Analytics 4** — Anonymous usage tracking
 - **Static Site** — Deployable anywhere (GitHub Pages, Netlify, Vercel, even a USB stick)
 
 ## 🔒 Privacy & Analytics
