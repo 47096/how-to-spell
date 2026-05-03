@@ -345,42 +345,64 @@
       language: navigator.language
     });
 
-    // === Bad word filter ===
-    const BLOCKED_WORDS = new Set([
-      'fuck','fck','fuk','fucc','fux','phuck','fucker','fucking','fucked','fucks',
-      'shit','shyt','sh1t','shiit',
-      'damn','dammit','damnit',
-      'hell','hells',
-      'bitch','biatch','betch',
-      'ass','arse','asses','asshole',
-      'bastard','basterd',
-      'crap',
-      'dick','dik','d1ck',
-      'cock','cok',
-      'piss','pis',
-      'slut','slt',
-      'whore','hore','wh0re',
-      'twat',
-      'retard','retarded',
-      'nigger','nigga','n1gger','n1gga','ngr','kike','spic','chink','gook','wetback',
-      'kill','murder','die','suicide','bomb','gun','weapon',
-      'drugs','drug','cocaine','heroin','meth','weed','marijuana','lsd','ecstasy',
-      'porn','sex','sexy','nude','naked','boobs','penis','vagina',
-    ]);
-
-    const BLOCKED_PATTERNS = [
-      /\bf+u+c+k+/i,
-      /\bs+h+i+t+/i,
-      /\ba+s+s+h+o+l+e/i,
-      /\bn+i+g+(g|a)/i,
+    // === Content Filter ===
+    // Load blocked words from external JSON file for easy management
+    let BLOCKED_CATEGORIES = {};
+    let BLOCKED_WORDS_SET = new Set();
+    const FUZZY_PATTERNS = [
+      /f+u+c+k+/i,           // fuck variations
+      /s+h+i+t+/i,           // shit variations  
+      /b+i+t+c+h+/i,         // bitch variations
+      /a+s+s+h+o+l+e/i,      // asshole variations
+      /n+i+g+(g|a)+/i,       // n-word variations
+      /w+h+o+r+e+/i,         // whore variations
+      /s+l+u+t+/i,           // slut variations
     ];
 
-    function isWordBlocked(word) {
-      const clean = word.toLowerCase().replace(/[^a-z]/g, '');
-      if (BLOCKED_WORDS.has(clean)) return true;
-      for (const pattern of BLOCKED_PATTERNS) {
-        if (pattern.test(clean)) return true;
+    // Load blocked words from JSON file
+    async function loadBlockedWords() {
+      try {
+        const response = await fetch('blocked-words.json');
+        if (!response.ok) throw new Error('Failed to load blocked words');
+        BLOCKED_CATEGORIES = await response.json();
+        
+        // Build optimized lookup set from all categories
+        BLOCKED_WORDS_SET = new Set(
+          Object.values(BLOCKED_CATEGORIES).flat()
+        );
+      } catch (error) {
+        console.error('Error loading blocked words:', error);
+        // Fallback to empty set if loading fails
+        BLOCKED_WORDS_SET = new Set();
       }
+    }
+
+    function isWordBlocked(word) {
+      if (!word || word.length < 2) return false;
+      
+      // Normalize: remove non-alphabetic chars, lowercase
+      const normalized = word.toLowerCase().replace(/[^a-z]/g, '');
+      
+      // Direct match check (O(1) lookup)
+      if (BLOCKED_WORDS_SET.has(normalized)) return true;
+      
+      // Fuzzy pattern matching for obfuscated words
+      for (const pattern of FUZZY_PATTERNS) {
+        if (pattern.test(normalized)) return true;
+      }
+      
+      // Check for common leetspeak substitutions
+      const leetspeak = normalized
+        .replace(/0/g, 'o')
+        .replace(/1/g, 'i')
+        .replace(/3/g, 'e')
+        .replace(/4/g, 'a')
+        .replace(/5/g, 's')
+        .replace(/7/g, 't')
+        .replace(/\$/g, 's');
+      
+      if (BLOCKED_WORDS_SET.has(leetspeak)) return true;
+      
       return false;
     }
 
@@ -414,6 +436,11 @@
     };
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    // Load blocked words before initializing speech recognition
+    loadBlockedWords().then(() => {
+      console.log('Blocked words loaded successfully');
+    });
 
     if (!SpeechRecognition) {
       micBtn.style.display = 'none';
