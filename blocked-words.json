@@ -1,25 +1,57 @@
 {
   "profanity": [
     "fuck",
+    "fuk",
     "shit",
+    "sh1t",
     "bitch",
+    "b!tch",
     "asshole",
+    "a$$hole",
     "nigga",
     "whore",
-    "slut"
+    "slut",
+    "f*ck",
+    "sh!t",
+    "damn",
+    "crap"
   ],
   "hate": [
     "racist",
     "bigot",
     "sexist",
     "homophobe",
-    "misogynist"
+    "misogynist",
+    "antisemite",
+    "xenophobe"
   ],
   "sexual": [
     "porn",
     "sex",
     "nude",
     "xxx",
-    "erotic"
+    "erotic",
+    "anal",
+    "cum",
+    "orgasm",
+    "masturbate"
+  ],
+  "bullying": [
+    "loser",
+    "nerd",
+    "geek",
+    "stupid",
+    "idiot",
+    "fat",
+    "ugly",
+    "crybaby"
+  ],
+  "self_harm": [
+    "suicide",
+    "kill myself",
+    "cut",
+    "harm myself",
+    "overdose",
+    "self-harm"
   ]
 }
