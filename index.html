@@ -195,6 +195,56 @@
     .error-msg.show {
       opacity: 1;
     }
+
+    /* Skeleton Loading Styles */
+    .skeleton-loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 400px;
+      padding: 2rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      z-index: 5;
+    }
+
+    .skeleton-line {
+      height: 24px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      animation: shimmer 1.5s infinite;
+    }
+
+    .skeleton-title {
+      height: 48px;
+      width: 80%;
+      margin-bottom: 1.5rem;
+    }
+
+    .skeleton-subtitle {
+      height: 32px;
+      width: 60%;
+      margin-bottom: 1rem;
+    }
+
+    .skeleton-text {
+      height: 20px;
+      width: 100%;
+    }
+
+    .skeleton-text.short {
+      width: 40%;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
   </style>
 </head>
 <body>
@@ -217,6 +267,13 @@
   </div>
 
   <div class="word-stage" id="wordStage">
+    <!-- Skeleton Loading State -->
+    <div id="skeletonLoader" class="skeleton-loader" style="display: none;">
+      <div class="skeleton-line skeleton-title"></div>
+      <div class="skeleton-line skeleton-subtitle"></div>
+      <div class="skeleton-line skeleton-text short"></div>
+    </div>
+    
     <div class="display-word" id="displayWord"></div>
     <div class="tap-hint" id="tapHint" style="display:none">Tap to try another word</div>
   </div>
@@ -336,6 +393,7 @@
     const errorMsg = document.getElementById('errorMsg');
     const waveformContainer = document.getElementById('waveformContainer');
     const waveformCanvas = document.getElementById('waveformCanvas');
+    const skeletonLoader = document.getElementById('skeletonLoader');
 
     let isListening = false;
     let isAnimating = false;
@@ -461,6 +519,14 @@
         device_type: deviceType
       });
 
+      // Show skeleton loader while preparing to display word
+      skeletonLoader.style.display = 'block';
+      displayWord.textContent = '';
+      
+      // Small delay to show skeleton animation for smoother UX
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      skeletonLoader.style.display = 'none';
       wordStage.classList.add('active');
       tapHint.style.display = 'none';
       displayWord.textContent = word.charAt(0).toUpperCase() + word.slice(1);
@@ -506,6 +572,7 @@
     function hideWordStage() {
       wordStage.classList.remove('active');
       tapHint.style.display = 'none';
+      skeletonLoader.style.display = 'none';
       displayWord.textContent = '';
     }
 
