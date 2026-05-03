@@ -4,7 +4,8 @@
 [![No Dependencies](https://img.shields.io/badge/dependencies-none-success)]()
 [![Status](https://img.shields.io/badge/status-active-success)]()
 
-> How to spell ... ?
+> Say, how to spell ... ?
+
 
 Kids ask "how do you spell [word]?" a hundred times a day. In the car. At the dinner table. When you're busy. It's not annoying because you don't care — it's annoying because you can't always drop everything. This app gives them the answer on their own. Tap the button, say the word, see the spelling. Done.
 
