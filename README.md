@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![No Dependencies](https://img.shields.io/badge/dependencies-none-success)]()
+[![Content Filter](https://img.shields.io/badge/content-kid--safe-blue)](#-content-filter)
 [![Status](https://img.shields.io/badge/status-active-success)]()
 
 > Say, how to spell ... ?
@@ -19,12 +20,12 @@ Try it now: **[wsamuelw.github.io/how-to-spell](https://wsamuelw.github.io/how-t
 
 - **Voice Recognition** - Say "how to spell [word]" or just the word itself
 - **Real-time Waveform** - Visual feedback when listening to your voice
-- **Smart Error Handling** - Clear, actionable messages for common issues
-- **Skeleton Loading** - Smooth transitions between states
+- **Content Filter** - Blocks profanity, hate speech, slurs, and inappropriate words with fuzzy matching for obfuscated spellings
+- **Kid-Friendly Errors** - Error messages written for children, not developers
 - **Mobile Optimized** - Works perfectly on phones and tablets
 - **Zero Setup** - No accounts, no passwords, no configuration
 - **No Install** - Just open the link, no app store needed
-- **Privacy First** - Minimal analytics, no personal data collection
+- **Privacy First** - No voice recordings, no accounts, no word tracking (see [Privacy & Analytics](#-privacy--analytics))
 
 ## 📱 Use Cases
 
@@ -86,6 +87,38 @@ That's it. No accounts. No settings. No distractions.
 - **Google Analytics 4** — Anonymous usage tracking
 - **Static Site** — Deployable anywhere (GitHub Pages, Netlify, Vercel, even a USB stick)
 
+## 🛡️ Content Filter
+
+The app includes a content filter (`blocked-words.json`) to prevent displaying inappropriate words to children. It covers six categories:
+
+| Category | Examples | Count |
+|----------|----------|-------|
+| Profanity | fuck, shit, bitch, asshole | 15 |
+| Slurs | nigger, fag, chink, spic | 11 |
+| Hate speech | racist, bigot, sexist | 7 |
+| Sexual content | porn, nude, dildo | 14 |
+| Bullying | loser, stupid, moron | 8 |
+| Self-harm | suicide, kys, "want to die" | 10 |
+
+**How it works:**
+- Direct word matching via a normalised `Set` lookup (O(1))
+- Symbol-to-letter mapping before normalisation (`@` → `a`, `!` → `i`, `$` → `s`)
+- Fuzzy regex patterns for obfuscated spellings (missing vowels, repeated letters)
+- Leetspeak substitution detection (0 → o, 1 → i, 3 → e, etc.)
+
+### Limitations
+
+The content filter is a **best-effort client-side check**, not a security boundary. It has known gaps:
+
+- **Speech recognition output** — the Web Speech API returns what it hears, which is usually clean speech. A child saying "eff you" won't be caught because the API transcribes it as "f you" or "eff you", not the spelled-out word.
+- **Novel obfuscation** — the fuzzy patterns cover common tricks (missing vowels, leetspeak, symbol substitution), but a motivated user can always find new ways to bypass client-side filtering.
+- **Substring matching** — the filter checks whole words, not substrings. "ass" is blocked but "class" and "grass" pass through. This is intentional to avoid false positives on legitimate words.
+- **Over-blocking trade-off** — some common words are blocked (e.g., "sex" in "sexual health", "anal" in "analogy"). The filter prioritises safety over completeness for a children's app.
+- **No server-side validation** — the filter runs entirely in the browser. The blocked word list is fetched from a JSON file that could be modified if someone forks the repo.
+- **Language limited** — currently English only. The Web Speech API's `lang` is set to `en-US`.
+
+Contributions to improve the filter are welcome — see `blocked-words.json` for the word lists.
+
 ## 🔒 Privacy & Analytics
 
 This app uses **Google Analytics 4** to track anonymous usage statistics:
@@ -99,7 +132,7 @@ This app uses **Google Analytics 4** to track anonymous usage statistics:
 - Specific words searched (only word length)
 - User identity, location, or raw user agent strings
 
-You can view the implementation in `index.html` (lines 27-34).
+You can view the implementation in the `gtag` script tag near the top of `index.html`.
 
 ## 🏃 Running Locally
 
