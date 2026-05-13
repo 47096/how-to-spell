@@ -228,6 +228,66 @@
       opacity: 1;
     }
 
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1c1c1e;
+        color: #f5f5f7;
+      }
+
+      .title {
+        color: #98989d;
+      }
+
+      .mic-btn {
+        background: #f5f5f7;
+      }
+
+      .mic-icon {
+        fill: #1c1c1e;
+      }
+
+      .mic-btn:active {
+        background: #d1d1d6;
+      }
+
+      .mic-btn.listening {
+        background: #ff453a;
+      }
+
+      @keyframes idlePulse {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(245, 245, 247, 0.18);
+        }
+        50% {
+          box-shadow: 0 0 0 14px rgba(245, 245, 247, 0);
+        }
+      }
+
+      .listening-text {
+        color: #98989d;
+      }
+
+      .word-stage {
+        background: #1c1c1e;
+      }
+
+      .display-word {
+        background: linear-gradient(135deg, #ff453a, #ff9f0a, #30d158);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .tap-hint {
+        color: #98989d;
+      }
+
+      .error-msg {
+        background: #f5f5f7;
+        color: #1c1c1e;
+      }
+    }
+
   </style>
 </head>
 <body>
