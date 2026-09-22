@@ -25,7 +25,7 @@ Try it now: **[47096.github.io/how-to-spell](https://47096.github.io/how-to-spel
 - **No-Troll Design** - Every rejection looks identical (no "blocked!" scoreboard), mumbled speech is asked again rather than guessed, and all recognition candidates are screened before anything shows. Words display in proper case (`Dinosaur`) so kids can copy them straight into their writing
 - **Mobile Optimized** - Works perfectly on phones and tablets
 - **Zero Setup** - No accounts, no passwords, no configuration
-- **No Install** - Just open the link, no app store needed
+- **No Install** - Just open the link, no app store needed. Optional: “Add to Home Screen” for a full-screen app-like launch
 - **Privacy First** - No voice recordings, no accounts, no word tracking (see [Privacy & Analytics](#-privacy--analytics))
 
 ## 📱 Use Cases
