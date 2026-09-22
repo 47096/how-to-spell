@@ -85,7 +85,7 @@ That's it. No accounts. No settings. No distractions.
 - **Vanilla HTML, CSS, JavaScript** — No frameworks, no dependencies, no build step
 - **Web Speech API** — Native browser speech recognition
 - **Web Audio API** — Real-time waveform visualization
-- **Google Analytics 4** — Anonymous usage tracking
+- **Google Analytics 4** — Optional anonymous usage tracking (disable via `GA_ID`)
 - **Static Site** — Deployable anywhere (GitHub Pages, Netlify, Vercel, even a USB stick)
 
 ## 🛡️ Content Filter
@@ -104,9 +104,9 @@ The app includes a content filter to prevent displaying inappropriate words to c
 **How it works:**
 - Direct word matching via a normalised `Set` lookup (O(1))
 - Symbol-to-letter mapping before normalisation (`@` → `a`, `!` → `i`, `$` → `s`)
-- Fuzzy regex patterns for obfuscated spellings (missing vowels, repeated letters)
+- Whole-word fuzzy patterns for obfuscated spellings (missing vowels, repeated letters) — e.g. `fck` / `diick`, not letters buried inside longer words
 - Leetspeak substitution detection (0 → o, 1 → i, 3 → e, etc.)
-- An allow-list for real words that would otherwise trip fuzzy patterns (e.g. Dickens, Dickinson)
+- An allow-list for real words that would otherwise trip fuzzy patterns (e.g. Dickens, Dickinson, shiitake)
 
 ### Limitations
 
@@ -114,8 +114,8 @@ The content filter is a **best-effort client-side check**, not a security bounda
 
 - **Speech recognition output** — the Web Speech API returns what it hears, which is usually clean speech. A child saying "eff you" won't be caught because the API transcribes it as "f you" or "eff you", not the spelled-out word.
 - **Novel obfuscation** — the fuzzy patterns cover common tricks (missing vowels, leetspeak, symbol substitution), but a motivated user can always find new ways to bypass client-side filtering.
-- **Substring matching** — the filter checks whole words, not substrings. "ass" is blocked but "class" and "grass" pass through. This is intentional to avoid false positives on legitimate words.
-- **Over-blocking trade-off** — some common words are blocked (e.g., "sex" in "sexual health", "anal" in "analogy"). The filter prioritises safety over completeness for a children's app.
+- **Whole-word matching** — the filter checks whole words after cleanup, not substrings. "ass" is blocked but "class", "grass", and "analogy" pass through. This is intentional to avoid false positives on legitimate words.
+- **Over-blocking trade-off** — some ordinary words are on the list themselves and are blocked when said alone (e.g. "sex", "stupid"). The filter prioritises safety over completeness for a children's app.
 - **No server-side validation** — the filter runs entirely in the browser. If you fork this repo, you can edit the word lists out of it.
 - **Language limited** — currently English only. The Web Speech API's `lang` is set to `en-US`.
 
@@ -123,7 +123,7 @@ Contributions to improve the filter are welcome — see `blocked-words.json` for
 
 ## 🔒 Privacy & Analytics
 
-This app uses **Google Analytics 4** to track anonymous usage statistics:
+Analytics are **optional** and controlled by `GA_ID` near the top of `index.html`. Set it to `''` to send nothing at all (recommended for forks). When enabled, this app uses **Google Analytics 4** to track anonymous usage statistics:
 - Page views with browser/device type
 - Voice recognition events (success/failure)
 
@@ -133,7 +133,7 @@ This app uses **Google Analytics 4** to track anonymous usage statistics:
 - Specific words searched (only word length)
 - User identity, location, or raw user agent strings
 
-You can view the implementation in the `gtag` script tag near the top of `index.html`.
+You can view the implementation in the `GA_ID` script block near the top of `index.html`.
 
 ## 🏃 Running Locally
 
@@ -206,7 +206,7 @@ A: Yes, completely free and open source (MIT license).
 A: Currently optimized for English. Multi-language support would require additional development.
 
 **Q: Why Google Analytics?**  
-A: To understand usage patterns and improve the app. All data is anonymous and aggregated.
+A: Optional, to understand usage patterns and improve the app. All data is anonymous and aggregated. Set `GA_ID` to `''` in `index.html` to turn it off completely (do this when forking).
 
 **Q: My kid broke it!**  
 A: Just refresh the page. Nothing can break permanently — it's just HTML!

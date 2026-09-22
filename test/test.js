@@ -47,6 +47,8 @@ const sandbox = {
     querySelector: () => null,
     addEventListener() {},
     visibilityState: 'visible',
+    createElement: () => fakeEl(),
+    head: { appendChild() {} },
   },
   navigator: { language: 'en-AU', userAgent: 'node-test' },
   AudioContext: function () {},

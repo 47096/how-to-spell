@@ -30,13 +30,20 @@
   <meta name="twitter:image" content="https://47096.github.io/how-to-spell/icon-512.png">
 
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YG9J93G0R4"></script>
+  <!-- Google Analytics (optional). Set GA_ID to '' to disable entirely.
+       Forks: use your own GA4 measurement id, or leave it empty. -->
   <script>
+    const GA_ID = 'G-YG9J93G0R4';
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-YG9J93G0R4', { send_page_view: false });
+    if (GA_ID) {
+      gtag('js', new Date());
+      gtag('config', GA_ID, { send_page_view: false });
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID);
+      document.head.appendChild(s);
+    }
   </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -342,7 +349,7 @@
   <script>
     // === Google Analytics Event Tracking ===
     function trackEvent(eventName, params = {}) {
-      if (typeof gtag !== 'undefined') {
+      if (typeof GA_ID === 'string' && GA_ID && typeof gtag !== 'undefined') {
         gtag('event', eventName, params);
       }
     }
