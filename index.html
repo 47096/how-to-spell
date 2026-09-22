@@ -164,25 +164,22 @@
       opacity: 1;
     }
 
-    /* Waveform container */
+    /* Waveform sits with the mic so “listening” is one cluster */
     .waveform-container {
-      position: fixed;
-      bottom: 20%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 200px;
-      height: 60px;
+      width: 180px;
+      height: 0;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease;
-      z-index: 5;
+      transition: opacity 0.2s ease, height 0.2s ease;
     }
 
     .waveform-container.show {
       opacity: 1;
+      height: 48px;
     }
 
     #waveformCanvas {
@@ -379,11 +376,11 @@
       </svg>
     </button>
 
-    <div class="listening-text" id="listeningText" aria-live="polite">Listening...</div>
-  </div>
+    <div class="waveform-container" id="waveformContainer">
+      <canvas id="waveformCanvas"></canvas>
+    </div>
 
-  <div class="waveform-container" id="waveformContainer">
-    <canvas id="waveformCanvas"></canvas>
+    <div class="listening-text" id="listeningText" aria-live="polite">Listening...</div>
   </div>
 
   <div class="word-stage" id="wordStage" tabindex="-1">
