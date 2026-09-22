@@ -75,10 +75,21 @@
     }
 
     .title {
-      font-size: 1.25rem;
-      font-weight: 500;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1d1d1f;
+      letter-spacing: -0.02em;
+    }
+
+    .hint-line {
+      font-size: 1rem;
       color: #636366;
-      letter-spacing: -0.01em;
+      text-align: center;
+    }
+
+    .example-word {
+      color: #1d1d1f;
+      font-weight: 600;
     }
 
     /* Mic button */
@@ -240,7 +251,7 @@
       background: #1d1d1f;
       color: white;
       padding: 0.875rem 1.5rem;
-      border-radius: 100px;
+      border-radius: 24px;
       font-size: 0.875rem;
       font-weight: 500;
       z-index: 20;
@@ -258,6 +269,28 @@
       opacity: 1;
     }
 
+    .error-msg.sticky {
+      pointer-events: auto;
+    }
+
+    .error-retry {
+      display: inline-block;
+      margin-top: 0.65rem;
+      margin-left: 0.5rem;
+      padding: 0.45rem 1rem;
+      border: none;
+      border-radius: 100px;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .error-retry[hidden] {
+      display: none;
+    }
+
     @media (prefers-color-scheme: dark) {
       body {
         background: #1c1c1e;
@@ -265,7 +298,15 @@
       }
 
       .title {
+        color: #f5f5f7;
+      }
+
+      .hint-line {
         color: #98989d;
+      }
+
+      .example-word {
+        color: #f5f5f7;
       }
 
       .mic-btn {
@@ -316,6 +357,11 @@
         background: #f5f5f7;
         color: #1c1c1e;
       }
+
+      .error-retry {
+        background: #1c1c1e;
+        color: #f5f5f7;
+      }
     }
 
   </style>
@@ -323,7 +369,8 @@
 <body>
 
   <div class="container">
-    <div class="title">Say. How to spell ... ?</div>
+    <h1 class="title">How do you spell…?</h1>
+    <p class="hint-line">Tap the mic and say a word — try <span class="example-word">dinosaur</span></p>
 
     <button class="mic-btn" id="micBtn" aria-label="Tap to speak">
       <svg class="mic-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -344,7 +391,10 @@
     <div class="tap-hint" id="tapHint" style="display:none">Tap to try another word</div>
   </div>
 
-  <div class="error-msg" id="errorMsg" role="alert" aria-live="assertive"></div>
+  <div class="error-msg" id="errorMsg" role="alert" aria-live="assertive">
+    <span id="errorText"></span>
+    <button type="button" class="error-retry" id="errorRetry" hidden>Try again</button>
+  </div>
 
   <script>
     // === Google Analytics Event Tracking ===
@@ -519,6 +569,8 @@
     const errorMsg = document.getElementById('errorMsg');
     const waveformContainer = document.getElementById('waveformContainer');
     const waveformCanvas = document.getElementById('waveformCanvas');
+    const errorText = document.getElementById('errorText');
+    const errorRetry = document.getElementById('errorRetry');
 
     let isListening = false;
     let errorTimer = null;
@@ -614,7 +666,11 @@
           errorMessage = errorMessages['default'];
         }
 
-        showError(errorMessage);
+        if (errorMessage === RETRY_MESSAGE) {
+          showError(errorMessage);
+        } else {
+          showStickyError(errorMessage);
+        }
         stopListening();
       };
 
@@ -627,7 +683,7 @@
 
     if (!SpeechRecognition) {
       micBtn.style.display = 'none';
-      showError('Voice not supported. Try Chrome or Safari.');
+      showError('Voice not supported. Try Chrome or Safari.', { sticky: true });
     } else {
       recognition = createRecognition();
     }
@@ -764,14 +820,43 @@
       displayWord.textContent = '';
     }
 
-    function showError(msg) {
-      errorMsg.textContent = msg;
+    // Soft misses auto-hide (kid mid-flow). Grown-up problems (permission,
+    // network, hardware) stay until dismissed or retried.
+    function showError(msg, opts = {}) {
+      const sticky = !!opts.sticky;
+      errorText.textContent = msg;
+      errorRetry.hidden = !opts.retry;
+      errorMsg.classList.toggle('sticky', sticky);
       errorMsg.classList.add('show');
-      if (errorTimer) clearTimeout(errorTimer);
-      errorTimer = setTimeout(() => {
-        errorMsg.classList.remove('show');
+      if (errorTimer) {
+        clearTimeout(errorTimer);
         errorTimer = null;
-      }, 3000);
+      }
+      if (!sticky) {
+        errorTimer = setTimeout(() => {
+          hideError();
+        }, 3000);
+      }
+    }
+
+    function hideError() {
+      errorMsg.classList.remove('show');
+      errorMsg.classList.remove('sticky');
+      errorRetry.hidden = true;
+      errorText.textContent = '';
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+        errorTimer = null;
+      }
+    }
+
+    errorRetry.addEventListener('click', () => {
+      hideError();
+      startListening();
+    });
+
+    function showStickyError(msg) {
+      showError(msg, { sticky: true, retry: true });
     }
 
     // === Audio Visualization (Waveform) ===
@@ -795,13 +880,13 @@
       } catch (e) {
         console.warn('Audio visualization not available:', e);
         if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
-          showError(errorMessages['not-allowed']);
+          showStickyError(errorMessages['not-allowed']);
         } else if (e.name === 'NotFoundError' || e.name === 'DevicesNotFoundError') {
-          showError(errorMessages['no-microphone']);
+          showStickyError(errorMessages['no-microphone']);
         } else if (e.name === 'NotReadableError' || e.name === 'TrackStartError') {
-          showError(errorMessages['audio-capture']);
+          showStickyError(errorMessages['audio-capture']);
         } else {
-          showError(errorMessages['default']);
+          showStickyError(errorMessages['default']);
         }
         return false;
       }

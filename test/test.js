@@ -19,9 +19,15 @@ const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1
 
 // --- Minimal DOM/browser stubs ---
 const fakeEl = () => ({
-  classList: { add() {}, remove() {}, contains() { return false; } },
+  classList: {
+    add() {},
+    remove() {},
+    contains() { return false; },
+    toggle() {},
+  },
   style: {},
   textContent: '',
+  hidden: false,
   addEventListener() {},
   removeEventListener() {},
   focus() {},
