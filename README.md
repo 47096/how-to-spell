@@ -14,7 +14,7 @@ Kids ask "how do you spell [word]?" a hundred times a day. In the car. At the di
 
 ## 🎯 Live Demo
 
-Try it now: **[wsamuelw.github.io/how-to-spell](https://wsamuelw.github.io/how-to-spell)** 
+Try it now: **[47096.github.io/how-to-spell](https://47096.github.io/how-to-spell)** 
 
 ## ✨ Features
 
@@ -139,7 +139,7 @@ You can view the implementation in the `gtag` script tag near the top of `index.
 
 ```bash
 # Clone the repo
-git clone https://github.com/wsamuelw/how-to-spell.git
+git clone https://github.com/47096/how-to-spell.git
 cd how-to-spell
 
 # Option 1: Open directly in browser

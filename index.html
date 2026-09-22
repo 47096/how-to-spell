@@ -20,14 +20,14 @@
   <meta property="og:title" content="How to Spell">
   <meta property="og:description" content="Kids tap the mic, say a word, and see how to spell it. No accounts, no recordings.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://wsamuelw.github.io/how-to-spell/">
-  <meta property="og:image" content="https://wsamuelw.github.io/how-to-spell/icon-512.png">
+  <meta property="og:url" content="https://47096.github.io/how-to-spell/">
+  <meta property="og:image" content="https://47096.github.io/how-to-spell/icon-512.png">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="How to Spell">
   <meta name="twitter:description" content="Kids tap the mic, say a word, and see how to spell it.">
-  <meta name="twitter:image" content="https://wsamuelw.github.io/how-to-spell/icon-512.png">
+  <meta name="twitter:image" content="https://47096.github.io/how-to-spell/icon-512.png">
 
 
   <!-- Google tag (gtag.js) -->
@@ -241,8 +241,10 @@
       pointer-events: none;
       transition: opacity 0.2s ease;
       text-align: center;
-      max-width: 85vw;
-      white-space: nowrap;
+      max-width: min(85vw, 22rem);
+      white-space: normal;
+      overflow-wrap: break-word;
+      line-height: 1.35;
     }
 
     .error-msg.show {
@@ -432,29 +434,36 @@
     let BLOCKED_WORDS_SET = new Set(
       Object.values(BLOCKED_CATEGORIES).flat().map(w => w.toLowerCase().replace(/[^a-z]/g, ''))
     );
-    // Real words whose letters trip a fuzzy pattern — always allowed.
-    const ALLOWED_WORDS = new Set(['dickens', 'dickinson', 'dickory']);
+    // Real words that look like a blocked stem — always allowed.
+    // Whole-word patterns below already spare most school words; this is
+    // a last-resort net for anything a stem still swallows.
+    const ALLOWED_WORDS = new Set([
+      'dickens', 'dickinson', 'dickory', 'dickensian',
+      'shiitake', 'shitake',
+    ]);
+    // Fuzzy shapes are ANCHORED to the full normalised token (see
+    // isWordBlocked). Substring patterns used to block dickensian, shiitake,
+    // etc. Whole-word + letter-repeat/leetspeak only — high-risk stems only.
+    // Bullying words stay exact-match in BLOCKED_CATEGORIES (no fuzzy).
     const FUZZY_PATTERNS = [
-      /f+u+c+k+/i,           // fuck variations
-      /f+c+k+/i,             // fck — missing vowels
-      /p+h+u+c+k+/i,         // phuck — ph substitution
-      /s+h+i+t+/i,           // shit variations
-      /s+h+t+/i,             // sht — missing vowels
-      /b+i+t+c+h+/i,         // bitch variations
-      /b+t+c+h+/i,           // btch — missing vowels
-      /a+s+s+h+o+l+e/i,      // asshole variations
-      /n+i+g+(g|a)+/i,       // n-word variations
-      /w+h+o+r+e+/i,         // whore variations
-      /s+l+u+t+/i,           // slut variations
-      /d+i+c+k+/i,           // dick with repeats
-      /p+i+s+s+/i,           // piss with repeats
-      /b+a+s+t+a+r+d+/i,     // bastard with repeats
-      /r+e+t+a+r+d+/i,       // retard with repeats
-      /s+t+f+u+/i,           // stfu
-      /k+u+n+t+/i,           // cunt variants
-      /t+w+a+t+/i,           // twat variants
-      /w+a+n+k+e+r+/i,       // wanker variants
-      /b+o+l+l+o+c+k+s+/i,   // bollocks variants
+      /^f+u*c+k+(?:e+r+|i+n+g+)?$/,   // fuck, fck, fuuuck, fucker, fucking
+      /^p+h+u+c+k+$/,                  // phuck
+      /^s+h+i*t+$/,                    // shit, sht, shiit
+      /^b+i*t+c+h+$/,                  // bitch, btch, bitcch
+      /^a+s+s+h+o+l+e+$/,              // asshole
+      /^n+i+g+(?:g+|a+|e+r+)*$/,       // nig, nigg, nigga, nigger
+      /^w+h+o+r+e+$/,
+      /^s+l+u+t+$/,
+      /^d+i+c+k+$/,                    // dick / diick / dck — not dickens
+      /^p+i+s+s+$/,
+      /^b+a+s+t+a+r+d+$/,
+      /^r+e+t+a+r+d+$/,                // retard — not retardant
+      /^s+t+f+u+$/,
+      /^[ck]+u+n+t+$/,                 // cunt / kunt
+      /^t+w+a+t+$/,
+      /^w+a+n+k+e+r+$/,
+      /^b+o+l+l+o*c+k+s+$/,
+      /^m+o+t+h+e+r+f+u+c+k+(?:e+r+)?$/,
     ];
 
     function isWordBlocked(word) {

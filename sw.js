@@ -1,5 +1,7 @@
-// v6: proper-case word display (matches how kids write).
-const CACHE_NAME = 'spell-v6';
+// v7: refresh the offline spare on every successful load.
+// v6 and earlier cached index.html only at install and never updated it,
+// so offline users kept that frozen copy forever.
+const CACHE_NAME = 'spell-v7';
 const SHELL = ['./index.html'];
 
 self.addEventListener('install', (e) => {
@@ -19,7 +21,22 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+
+  // Network-first (fresh when online), cache fallback (works offline),
+  // and rewrite the spare from the response we just served.
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(req)
+      .then((res) => {
+        if (res && res.ok && new URL(req.url).origin === self.location.origin) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME)
+            .then((cache) => cache.put(req, copy))
+            .catch(() => {});
+        }
+        return res;
+      })
+      .catch(() => caches.match(req))
   );
 });

@@ -96,15 +96,17 @@ check(sandbox.formatWord('ice cream') === 'Ice cream',
 
 // --- Content filter: must block ---
 [
-  'fuck', 'fck', 'fuuuck', 'd1ck', 'shit', '5h1t', 'cunt', 'kunt', 'twat',
+  'fuck', 'fck', 'fuuuck', 'fucker', 'fucking', 'd1ck', 'shit', '5h1t', 'cunt', 'kunt', 'twat',
   'wanker', 'bollocks', 'nigger', 'retard', 'suicide', 'want to die',
-  'sexy', 'horny', 'pussy', 'kys',
+  'sexy', 'horny', 'pussy', 'kys', 'phuck', 'asshole', 'btch',
 ].forEach(w => check(isWordBlocked(w), `"${w}" should be BLOCKED`));
 
-// --- Content filter: must allow ---
+// --- Content filter: must allow (school words / false-positive guards) ---
 [
   'dinosaur', 'elephant', 'class', 'grass', 'assess', 'assassin',
-  'dickens', 'Dickinson', 'dickory', 'scunthorpe', 'bass', 'passion',
+  'dickens', 'Dickinson', 'dickory', 'dickensian', 'scunthorpe', 'bass', 'passion',
+  'shiitake', 'shitake', 'retardant', 'analogy', 'sexual', 'function',
+  'bucket', 'shirt', 'where', 'count', 'result',
 ].forEach(w => check(!isWordBlocked(w), `"${w}" should be ALLOWED`));
 
 // --- Word extraction ---
