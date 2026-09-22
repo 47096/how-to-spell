@@ -5,7 +5,7 @@
 [![Content Filter](https://img.shields.io/badge/content-kid--safe-blue)](#-content-filter)
 [![Status](https://img.shields.io/badge/status-active-success)]()
 
-> Say, how to spell ... ?
+> How do you spell…?
 
 Kids ask "how do you spell [word]?" a hundred times a day. In the car. At the dinner table. When you're busy. It's not annoying because you don't care — it's annoying because you can't always drop everything. This app gives them the answer on their own. Tap the button, say the word, see the spelling. Done.
 
@@ -19,14 +19,17 @@ Try it now: **[47096.github.io/how-to-spell](https://47096.github.io/how-to-spel
 ## ✨ Features
 
 - **Voice Recognition** - Say "how to spell [word]" or just the word itself
-- **Real-time Waveform** - Visual feedback when listening to your voice
-- **Content Filter** - Blocks profanity, hate speech, slurs, and inappropriate words with fuzzy matching for obfuscated spellings
-- **Kid-Friendly Errors** - Error messages written for children, not developers
-- **No-Troll Design** - Every rejection looks identical (no "blocked!" scoreboard), mumbled speech is asked again rather than guessed, and all recognition candidates are screened before anything shows. Words display in proper case (`Dinosaur`) so kids can copy them straight into their writing
-- **Mobile Optimized** - Works perfectly on phones and tablets
+- **Letter-by-letter reveal** - The spelling builds in front of them (`D-i-n-o-s-a-u-r`) so they see order, not a blob
+- **Real-time Waveform** - Visual feedback next to the mic while listening
+- **Content Filter** - Blocks profanity, hate speech, slurs, and inappropriate words with whole-word fuzzy matching for obfuscated spellings
+- **Kid-Friendly Errors** - Error messages written for children, not developers; permission and network problems stay on screen with **Try again** until a grown-up acts
+- **No-Troll Design** - Every soft rejection looks identical (no "blocked!" scoreboard), and all recognition candidates are screened before anything shows. Words display in proper case (`Dinosaur`) so kids can copy them straight into their writing
+- **Mobile Optimized** - Works on phones and tablets, including short landscape (car mounts)
 - **Zero Setup** - No accounts, no passwords, no configuration
 - **No Install** - Just open the link, no app store needed. Optional: “Add to Home Screen” for a full-screen app-like launch
 - **Privacy First** - No voice recordings, no accounts, no word tracking (see [Privacy & Analytics](#-privacy--analytics))
+
+> Screenshots above were taken on an earlier UI pass (title copy and error chrome have changed). Behaviour matches this list.
 
 ## 📱 Use Cases
 
@@ -43,7 +46,7 @@ Your kid finds a new word in their book and wants to know how to spell it. No ne
 
 1. Tap the microphone button (Allow to access the microphone)
 2. Say "how to spell [word]" (or just say the word)
-3. See the spelling on screen with visual waveform feedback
+3. See the spelling revealed letter by letter, with waveform feedback while listening
 4. Tap anywhere to try another word
 
 That's it. No accounts. No settings. No distractions.
@@ -197,7 +200,7 @@ PRs welcome! Keep it simple — this app works because it does one thing well.
 ## ❓ FAQ
 
 **Q: Does it work offline?**  
-A: The UI works offline, but voice recognition requires an internet connection in most browsers.
+A: The UI shell works offline (last successful online visit is kept in cache). Voice recognition still needs an internet connection in most browsers.
 
 **Q: Is it free?**  
 A: Yes, completely free and open source (MIT license).
