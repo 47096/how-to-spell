@@ -74,6 +74,36 @@
       max-width: 400px;
     }
 
+    /* Short landscape (car mount / road trip): keep the stack optically
+       centred on the short side instead of hugging the top. */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .container {
+        gap: 0.85rem;
+        padding: 1rem 1.5rem;
+      }
+
+      .title {
+        font-size: 1.15rem;
+      }
+
+      .hint-line {
+        font-size: 0.875rem;
+      }
+
+      .mic-btn {
+        width: 72px;
+        height: 72px;
+      }
+
+      .waveform-container.show {
+        height: 36px;
+      }
+
+      .tap-hint {
+        margin-top: 1.25rem;
+      }
+    }
+
     .title {
       font-size: 1.5rem;
       font-weight: 600;
